@@ -447,7 +447,7 @@ class PpoAgent(object):
             sli = slice(l * self.I.lump_stride, (l + 1) * self.I.lump_stride)
             memsli = slice(None) if self.I.mem_state is NO_STATES else sli
             dict_obs = self.stochpol.ensure_observation_is_dict(obs)
-            with logger.ProfileKV("policy_inference"):
+            with logger.profile_kv("policy_inference"):
                 #Calls the policy and value function on current observation.
                 acs, vpreds_int, vpreds_ext, nlps, self.I.mem_state[memsli], ent = self.stochpol.call(dict_obs, news, self.I.mem_state[memsli],
                                                                                                                update_obs_stats=self.update_ob_stats_every_step)
@@ -477,22 +477,20 @@ class PpoAgent(object):
                 for k in self.stochpol.ph_ob_keys:
                     self.I.buf_ob_last[k][sli] = dict_nextobs[k]
                 self.I.buf_new_last[sli] = nextnews
-                with logger.ProfileKV("policy_inference"):
+                with logger.profile_kv("policy_inference"):
                     _, self.I.buf_vpred_int_last[sli], self.I.buf_vpred_ext_last[sli], _, _, _ = self.stochpol.call(dict_nextobs, nextnews, self.I.mem_state[memsli], update_obs_stats=False)
                 self.I.buf_rews_ext[sli, t] = rews
 
             #Calcuate the intrinsic rewards for the rollout.
             fd = {}
             fd[self.stochpol.ph_ob[None]] = np.concatenate([self.I.buf_obs[None], self.I.buf_ob_last[None][:,None]], 1)
-            fd.update({self.stochpol.ph_mean: self.stochpol.ob_rms.mean,
-                       self.stochpol.ph_std: self.stochpol.ob_rms.var ** 0.5})
             fd[self.stochpol.ph_ac] = self.I.buf_acs
             self.I.buf_rews_int[:] = tf.get_default_session().run(self.stochpol.int_rew, fd)
 
             if not self.update_ob_stats_every_step:
                 #Update observation normalization parameters after the rollout is completed.
                 obs_ = self.I.buf_obs[None].astype(np.float32)
-                self.stochpol.ob_rms.update(obs_.reshape((-1, *obs_.shape[2:]))[:,:,:,-1:])
+                self.stochpol.ob_rms.update(obs_.reshape((-1, *obs_.shape[2:])))
             if not self.testing:
                 update_info = self.update()
             else:
