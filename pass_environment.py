@@ -101,7 +101,7 @@ class Pass:
         # if obs_d:
         #     return self.observations_d()
 
-        info = {'door': self.door_open, 'state': copy.deepcopy(self.state_n), 'r': self.reward()[0]}
+        info = {'door': self.door_open, 'state': copy.deepcopy(self.state_n)}
 
         return self.obs_n()[0], self.reward()[0], self.done(), info
 
