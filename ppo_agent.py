@@ -298,8 +298,6 @@ class PpoAgent(object):
         info = dict(
             advmean = self.I.buf_advs.mean(),
             advstd  = self.I.buf_advs.std(),
-            rews_int = rews_int.mean(),
-            rews_ext = rews_ext.mean(),
             retintmean = rets_int.mean(), # previously retmean
             retintstd  = rets_int.std(), # previously retstd
             retextmean = rets_ext.mean(), # previously not there
