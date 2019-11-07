@@ -248,7 +248,7 @@ class Island:
 
 		info['rew'] = info_r
 
-		return return_obs[0], return_rew, return_done, info
+		return return_obs[0], return_rew[0], return_done, info
 
 	def obs_n(self):
 		return [self.obs() for _ in range(self.n_agent)]

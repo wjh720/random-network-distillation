@@ -185,7 +185,7 @@ class PushBall:
 
 		info['rew'] = info_r
 
-		return return_obs[0], return_rew, return_done, info
+		return return_obs[0], return_rew[0], return_done, info
 
 	def reset(self):
 		self.t_step = 0

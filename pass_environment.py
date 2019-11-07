@@ -103,7 +103,7 @@ class Pass:
 
         info = {'door': self.door_open, 'state': copy.deepcopy(self.state_n)}
 
-        return self.obs_n()[0], self.reward(), self.done(), info
+        return self.obs_n()[0], self.reward()[0], self.done(), info
 
     def fix_reset(self):
         self.t_step = 0
