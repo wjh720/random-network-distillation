@@ -51,7 +51,7 @@ class FcPolicy(StochasticPolicy):
         #Inputs to policy and value function will have different shapes depending on whether it is rollout
         #or optimization time, so we treat separately.
         self.pdparam_opt, self.vpred_int_opt, self.vpred_ext_opt, self.snext_opt = \
-            self.apply_policy(self.ph_ob[None][:,:-1],
+            self.apply_policy(self.ph_ob[None],
                               reuse=False,
                               scope=scope,
                               hidsize=hidsize,
@@ -152,7 +152,7 @@ class FcPolicy(StochasticPolicy):
                 logger.info("FcTarget: using '%s' shape %s as image input" % (ph.name, str(ph.shape)))
                 xr = ph[:, 1:]
                 xr = tf.cast(xr, tf.float32)
-                xr = tf.reshape(xr, (-1, *ph.shape.as_list()[-1:]))[:, -1:]
+                xr = tf.reshape(xr, (-1, *ph.shape.as_list()[-1:]))
 
                 xr = tf.nn.leaky_relu(fc(xr, 'c1r', nh=rep_size, init_scale=np.sqrt(2)))
                 xr = tf.nn.leaky_relu(fc(xr, 'c2r', nh=rep_size, init_scale=np.sqrt(2)))
@@ -181,7 +181,7 @@ class FcPolicy(StochasticPolicy):
                 logger.info("FcTarget: using '%s' shape %s as image input" % (ph.name, str(ph.shape)))
                 xrp = ph[:, 1:]
                 xrp = tf.cast(xrp, tf.float32)
-                xrp = tf.reshape(xrp, (-1, *ph.shape.as_list()[-1:]))[:, -1:]
+                xrp = tf.reshape(xrp, (-1, *ph.shape.as_list()[-1:]))
 
                 xrp = tf.nn.leaky_relu(fc(xrp, 'c1rp_pred', nh=8 * enlargement, init_scale=np.sqrt(2)))
                 xrp = tf.nn.leaky_relu(fc(xrp, 'c2rp_pred', nh=8 * enlargement, init_scale=np.sqrt(2)))
@@ -225,7 +225,7 @@ class FcPolicy(StochasticPolicy):
                 logger.info("FcTarget: using '%s' shape %s as image input" % (ph.name, str(ph.shape)))
                 xr = ph[:, 1:]
                 xr = tf.cast(xr, tf.float32)
-                xr = tf.reshape(xr, (-1, *ph.shape.as_list()[-1:]))[:, -1:]
+                xr = tf.reshape(xr, (-1, *ph.shape.as_list()[-1:]))
 
                 xr = tf.nn.leaky_relu(fc(xr, 'c1r', nh=rep_size, init_scale=np.sqrt(2)))
                 xr = tf.nn.leaky_relu(fc(xr, 'c2r', nh=rep_size, init_scale=np.sqrt(2)))
@@ -261,7 +261,7 @@ class FcPolicy(StochasticPolicy):
                 X_r_hat = fc(cond(X_r_hat), 'fc1r_hat3_pred', nh=rep_size, init_scale=np.sqrt(2))
             else:
                 logger.info("FcTarget: using '%s' shape %s as image input" % (ph.name, str(ph.shape)))
-                xrp = ph[:, :-1]
+                xrp = ph
                 xrp = tf.cast(xrp, tf.float32)
                 xrp = tf.reshape(xrp, (-1, *ph.shape.as_list()[-1:]))
 

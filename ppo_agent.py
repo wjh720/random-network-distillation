@@ -216,7 +216,7 @@ class PpoAgent(object):
                 all_ob.append(ob)
                 if len(all_ob) % (128 * self.I.nlump) == 0:
                     ob_ = np.asarray(all_ob).astype(np.float32).reshape((-1, *self.ob_space.shape))
-                    self.stochpol.ob_rms.update(ob_[:,:,:,-1:])
+                    self.stochpol.ob_rms.update(ob_)
                     all_ob.clear()
 
     def stop_interaction(self):
@@ -377,7 +377,7 @@ class PpoAgent(object):
                 [fd[self.stochpol.ph_ob[None]].shape, [self.I.nenvs//self.nminibatches, self.nsteps + 1] + list(self.ob_space.shape)]
             fd.update({self.stochpol.ph_mean:self.stochpol.ob_rms.mean, self.stochpol.ph_std:self.stochpol.ob_rms.var**0.5})
 
-            ret = tf.get_default_session().run(self._losses+[self._train], feed_dict=fd)[:-1]
+            ret = tf.get_default_session().run(self._losses+[self._train], feed_dict=fd)
             if not self.testing:
                 lossdict = dict(zip([n for n in self.loss_names], ret), axis=0)
             else:
@@ -491,7 +491,7 @@ class PpoAgent(object):
             if not self.update_ob_stats_every_step:
                 #Update observation normalization parameters after the rollout is completed.
                 obs_ = self.I.buf_obs[None].astype(np.float32)
-                self.stochpol.ob_rms.update(obs_.reshape((-1, *obs_.shape[2:]))[:,:,:,-1:])
+                self.stochpol.ob_rms.update(obs_.reshape((-1, *obs_.shape[2:])))
             if not self.testing:
                 update_info = self.update()
             else:
