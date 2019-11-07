@@ -436,12 +436,6 @@ class PpoAgent(object):
                 if 'episode' in info:
                     #Information like rooms visited is added to info on end of episode.
                     epinfos.append(info['episode'])
-                    info_with_places = info['episode']
-                    try:
-                        info_with_places['places'] = info['episode']['visited_rooms']
-                    except:
-                        import ipdb; ipdb.set_trace()
-                    self.I.buf_epinfos[env_pos_in_lump+l*self.I.lump_stride][t] = info_with_places
 
             sli = slice(l * self.I.lump_stride, (l + 1) * self.I.lump_stride)
             memsli = slice(None) if self.I.mem_state is NO_STATES else sli
