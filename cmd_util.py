@@ -18,6 +18,25 @@ from pushball_environment import PushBall
 from x_island_environment import x_Island
 
 
+def make_atari_env(env_id, num_env, seed, wrapper_kwargs=None, start_index=0, max_episode_steps=4500):
+	"""
+	Create a wrapped, monitored SubprocVecEnv for Atari.
+	"""
+	if wrapper_kwargs is None: wrapper_kwargs = {}
+
+	def make_env(rank):  # pylint: disable=C0111
+		def _thunk():
+			env = make_atari(env_id, max_episode_steps=max_episode_steps)
+			env.seed(seed + rank)
+			env = Monitor(env, logger.get_dir() and os.path.join(logger.get_dir(), str(rank)), allow_early_resets=True)
+			return wrap_deepmind(env, **wrapper_kwargs)
+
+		return _thunk
+
+	# set_global_seeds(seed)
+	return SubprocVecEnv([make_env(i + start_index) for i in range(num_env)])
+
+
 def make_pass_env(env_id, env_type, num_env, seed, args, subrank=0, wrapper_kwargs=None, start_index=0,
 				  reward_scale=1.0):
 	env = Pass(args, subrank)
@@ -47,25 +66,6 @@ def make_multi_pass_env(env_id, env_type, num_env, seed, args, wrapper_kwargs=No
 		)
 
 	return SubprocVecEnv_Pass([make_thunk(i + start_index) for i in range(num_env)], args)
-
-
-def make_atari_env(env_id, num_env, seed, wrapper_kwargs=None, start_index=0, max_episode_steps=4500):
-	"""
-	Create a wrapped, monitored SubprocVecEnv for Atari.
-	"""
-	if wrapper_kwargs is None: wrapper_kwargs = {}
-
-	def make_env(rank):  # pylint: disable=C0111
-		def _thunk():
-			env = make_atari(env_id, max_episode_steps=max_episode_steps)
-			env.seed(seed + rank)
-			env = Monitor(env, logger.get_dir() and os.path.join(logger.get_dir(), str(rank)), allow_early_resets=True)
-			return wrap_deepmind(env, **wrapper_kwargs)
-
-		return _thunk
-
-	# set_global_seeds(seed)
-	return SubprocVecEnv([make_env(i + start_index) for i in range(num_env)])
 
 
 def make_pushball_env(env_id, env_type, num_env, seed, args, subrank=0, wrapper_kwargs=None, start_index=0,

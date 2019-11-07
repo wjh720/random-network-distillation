@@ -13,14 +13,25 @@ from policies.fc_policy_param_matched import FcPolicy
 from ppo_agent import PpoAgent
 from utils import set_global_seeds
 from vec_env import VecFrameStack
+from cmd_util import make_multi_pass_env, make_m_island_env, make_m_pushball_env, make_m_x_island_env
 
 
-def train(*, env_id, num_env, hps, num_timesteps, seed):
-	venv = VecFrameStack(
-		make_atari_env(env_id, num_env, seed, wrapper_kwargs=dict(),
-					   start_index=num_env * MPI.COMM_WORLD.Get_rank(),
-					   max_episode_steps=hps.pop('max_episode_steps')),
-		hps.pop('frame_stack'))
+def get_venv(args, env_id, num_env, seed, hps):
+	env_type = args.env
+	if env_type == 'pass':
+		env = make_multi_pass_env(env_id, env_type, num_env, seed, args)
+	elif env_type == 'island':
+		env = make_m_island_env(env_id, env_type, num_env, seed, args)
+	elif env_type == 'x_island':
+		env = make_m_x_island_env(env_id, env_type, num_env, seed, args)
+	elif env_type == 'pushball':
+		env = make_m_pushball_env(env_id, env_type, num_env, seed, args)
+	venv = VecFrameStack(env, hps.pop('frame_stack'))
+	return venv
+
+def train(*, env_id, num_env, hps, num_timesteps, seed, args):
+	venv = get_venv(args, env_id, num_env, seed, hps)
+
 	# venv.score_multiple = {'Mario': 500,
 	#                        'MontezumaRevengeNoFrameskip-v4': 100,
 	#                        'GravitarNoFrameskip-v4': 250,
@@ -34,8 +45,7 @@ def train(*, env_id, num_env, hps, num_timesteps, seed):
 	ob_space = venv.observation_space
 	ac_space = venv.action_space
 	gamma = hps.pop('gamma')
-	policy = {'rnn': CnnGruPolicy,
-			  'cnn': CnnPolicy}[hps.pop('policy')]
+	policy = {'fc': FcPolicy}[hps.pop('policy')]
 	agent = PpoAgent(
 		scope='ppo',
 		ob_space=ob_space,
@@ -56,7 +66,7 @@ def train(*, env_id, num_env, hps, num_timesteps, seed):
 		nminibatches=hps.pop('nminibatches'),
 		lr=hps.pop('lr'),
 		cliprange=0.1,
-		nsteps=128,
+		nsteps=2048,
 		ent_coef=0.001,
 		max_grad_norm=hps.pop('max_grad_norm'),
 		use_news=hps.pop("use_news"),
@@ -193,7 +203,7 @@ def main():
 	set_global_seeds(seed)
 
 	hps = dict(
-		frame_stack=4,
+		frame_stack=1,
 		nminibatches=4,
 		nepochs=4,
 		lr=0.0001,
@@ -215,7 +225,7 @@ def main():
 
 	tf_util.make_session(make_default=True)
 	train(env_id=args.env, num_env=args.num_env, seed=seed,
-		  num_timesteps=args.num_timesteps, hps=hps)
+		  num_timesteps=args.num_timesteps, hps=hps, args=args)
 
 
 if __name__ == '__main__':
