@@ -469,9 +469,9 @@ class SubprocVecEnv_Island(SubprocVecEnv_Pass):
 							  self.args.n_agent, self.args)
 		self.cen = Island_Cen(self.args.size, self.args.island_agent_max_power, self.args.n_agent, self.args)
 		self.key_points = Island_Appro_C_points(self.args.size, self.args.n_action,
-		                                        self.args.island_agent_max_power,
-		                                        self.args.island_wolf_max_power,
-		                                        self.args, is_print=True)
+												self.args.island_agent_max_power,
+												self.args.island_wolf_max_power,
+												self.args, is_print=True)
 		self.ext_rewards_list = [[] for _ in range(self.args.n_agent)]
 		self.num_kill = []
 		self.time_length = [[] for _ in range(self.args.n_agent)]
@@ -536,11 +536,11 @@ class SubprocVecEnv_Island(SubprocVecEnv_Pass):
 					print(self.e_step + 1)
 					for i in range(self.args.n_agent):
 						print('agent_%d : ' % i,
-						      'ext', round(float(sum(self.ext_rewards_list[i])) / (1000.0 * s_rate), 2),
-						      'death', round(float(sum(self.death[i])) / (1000.0 * s_rate), 2),
-						      'time_length', round(sum(self.time_length[i]) / (1000.0 * s_rate), 2))
+							  'ext', round(float(sum(self.ext_rewards_list[i])) / (1000.0 * s_rate), 2),
+							  'death', round(float(sum(self.death[i])) / (1000.0 * s_rate), 2),
+							  'time_length', round(sum(self.time_length[i]) / (1000.0 * s_rate), 2))
 					print('kill', float(sum(self.num_kill)) / (1000.0 * s_rate),
-					      'landmark', float(sum(self.landmark)) / (1000.0 * s_rate))
+						  'landmark', float(sum(self.landmark)) / (1000.0 * s_rate))
 
 					self.ext_rewards_list = [[] for _ in range(self.args.n_agent)]
 					self.num_kill = []
@@ -577,9 +577,9 @@ class SubprocVecEnv_x_Island(SubprocVecEnv_Pass):
 														  self.args, is_print=True)
 		'''
 		self.key_points = Island_VI_Appro_C_points(self.args.size, self.args.n_action,
-		                                           self.args.x_island_agent_max_power,
-		                                           self.args.x_island_wolf_max_power,
-		                                           self.args, is_print=True)
+												   self.args.x_island_agent_max_power,
+												   self.args.x_island_wolf_max_power,
+												   self.args, is_print=True)
 		self.n_agent = self.args.n_agent
 		self.ext_rewards_list = [[] for _ in range(self.args.n_agent)]
 		self.num_kill = []
@@ -702,16 +702,16 @@ class SubprocVecEnv_x_Island(SubprocVecEnv_Pass):
 					print(self.e_step + 1)
 					for i in range(self.args.n_agent):
 						print('agent_%d : ' % i,
-						      'ext', round(float(sum(self.ext_rewards_list[i])) / (1000.0 * s_rate), 2),
-						      'death', round(float(sum(self.death[i])) / (1000.0 * s_rate), 2),
-						      'time_length', round(sum(self.time_length[i]) / (1000.0 * s_rate), 2))
+							  'ext', round(float(sum(self.ext_rewards_list[i])) / (1000.0 * s_rate), 2),
+							  'death', round(float(sum(self.death[i])) / (1000.0 * s_rate), 2),
+							  'time_length', round(sum(self.time_length[i]) / (1000.0 * s_rate), 2))
 						'''
-						      'error_coor', round(sum(self.error_coor[i]) / (1000.0 * s_rate), 2),
-						      'error_coor_p', round(sum(self.error_coor_p[i]) / (1000.0 * s_rate), 2),
-						      'error_coor_t', round(sum(self.error_coor_t[i]) / (1000.0 * s_rate), 2))
-						      '''
+							  'error_coor', round(sum(self.error_coor[i]) / (1000.0 * s_rate), 2),
+							  'error_coor_p', round(sum(self.error_coor_p[i]) / (1000.0 * s_rate), 2),
+							  'error_coor_t', round(sum(self.error_coor_t[i]) / (1000.0 * s_rate), 2))
+							  '''
 					print('kill', float(sum(self.num_kill)) / (1000.0 * s_rate),
-					      'landmark', float(sum(self.landmark)) / (1000.0 * s_rate))
+						  'landmark', float(sum(self.landmark)) / (1000.0 * s_rate))
 
 					self.ext_rewards_list = [[] for _ in range(self.args.n_agent)]
 					self.num_kill = []
@@ -799,10 +799,10 @@ class SubprocVecEnv_PushBall(SubprocVecEnv_Pass):
 				s_rate = self.args.t_save_rate
 				if (self.e_step + 1) % (1000 * s_rate) == 0:
 					print(self.e_step + 1,
-					      'up', float(sum(self.win_rewards[0])) / (1000.0 * s_rate),
-					      'left', float(sum(self.win_rewards[1])) / (1000.0 * s_rate),
-					      'down', float(sum(self.win_rewards[2])) / (1000.0 * s_rate),
-					      'right', float(sum(self.win_rewards[3])) / (1000.0 * s_rate))
+						  'up', float(sum(self.win_rewards[0])) / (1000.0 * s_rate),
+						  'left', float(sum(self.win_rewards[1])) / (1000.0 * s_rate),
+						  'down', float(sum(self.win_rewards[2])) / (1000.0 * s_rate),
+						  'right', float(sum(self.win_rewards[3])) / (1000.0 * s_rate))
 					self.win_rewards = [[] for _ in range(4)]
 					self.dec.show(self.hot_map_save_path, self.e_step + 1)
 

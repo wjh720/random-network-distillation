@@ -19,7 +19,7 @@ from x_island_environment import x_Island
 
 
 def make_pass_env(env_id, env_type, num_env, seed, args, subrank=0, wrapper_kwargs=None, start_index=0,
-                  reward_scale=1.0):
+				  reward_scale=1.0):
 	env = Pass(args, subrank)
 	env.initialization(args)
 
@@ -27,8 +27,8 @@ def make_pass_env(env_id, env_type, num_env, seed, args, subrank=0, wrapper_kwar
 
 
 def make_multi_pass_env(env_id, env_type, num_env, seed, args, wrapper_kwargs=None, start_index=0, reward_scale=1.0,
-                        flatten_dict_observations=True,
-                        gamestate=None):
+						flatten_dict_observations=True,
+						gamestate=None):
 	wrapper_kwargs = wrapper_kwargs or {}
 	mpi_rank = MPI.COMM_WORLD.Get_rank() if MPI else 0
 	seed = seed + 10000 * mpi_rank if seed is not None else None
@@ -69,15 +69,15 @@ def make_atari_env(env_id, num_env, seed, wrapper_kwargs=None, start_index=0, ma
 
 
 def make_pushball_env(env_id, env_type, num_env, seed, args, subrank=0, wrapper_kwargs=None, start_index=0,
-                      reward_scale=1.0):
+					  reward_scale=1.0):
 	env = PushBall(args, subrank)
 	env.initialization(args)
 	return env
 
 
 def make_m_pushball_env(env_id, env_type, num_env, seed, args, wrapper_kwargs=None, start_index=0, reward_scale=1.0,
-                        flatten_dict_observations=True,
-                        gamestate=None):
+						flatten_dict_observations=True,
+						gamestate=None):
 	wrapper_kwargs = wrapper_kwargs or {}
 	mpi_rank = MPI.COMM_WORLD.Get_rank() if MPI else 0
 	seed = seed + 10000 * mpi_rank if seed is not None else None
@@ -99,7 +99,7 @@ def make_m_pushball_env(env_id, env_type, num_env, seed, args, wrapper_kwargs=No
 
 
 def make_x_island_env(env_id, env_type, num_env, seed, args, subrank=0, wrapper_kwargs=None, start_index=0,
-                    reward_scale=1.0):
+					reward_scale=1.0):
 	#env = test_Island(args, subrank)
 	env = x_Island(args, subrank)
 	env.initialization(args)
@@ -107,8 +107,8 @@ def make_x_island_env(env_id, env_type, num_env, seed, args, subrank=0, wrapper_
 
 
 def make_m_x_island_env(env_id, env_type, num_env, seed, args, wrapper_kwargs=None, start_index=0, reward_scale=1.0,
-                      flatten_dict_observations=True,
-                      gamestate=None):
+					  flatten_dict_observations=True,
+					  gamestate=None):
 	wrapper_kwargs = wrapper_kwargs or {}
 	mpi_rank = MPI.COMM_WORLD.Get_rank() if MPI else 0
 	seed = seed + 10000 * mpi_rank if seed is not None else None
@@ -130,7 +130,7 @@ def make_m_x_island_env(env_id, env_type, num_env, seed, args, wrapper_kwargs=No
 
 
 def make_island_env(env_id, env_type, num_env, seed, args, subrank=0, wrapper_kwargs=None, start_index=0,
-                    reward_scale=1.0):
+					reward_scale=1.0):
 	env = Island(args, subrank)
 	env.initialization(args)
 
@@ -138,8 +138,8 @@ def make_island_env(env_id, env_type, num_env, seed, args, subrank=0, wrapper_kw
 
 
 def make_m_island_env(env_id, env_type, num_env, seed, args, wrapper_kwargs=None, start_index=0, reward_scale=1.0,
-                      flatten_dict_observations=True,
-                      gamestate=None):
+					  flatten_dict_observations=True,
+					  gamestate=None):
 	wrapper_kwargs = wrapper_kwargs or {}
 	mpi_rank = MPI.COMM_WORLD.Get_rank() if MPI else 0
 	seed = seed + 10000 * mpi_rank if seed is not None else None
