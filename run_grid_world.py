@@ -9,6 +9,7 @@ import tf_util
 from cmd_util import make_atari_env, arg_parser
 from policies.cnn_gru_policy_dynamics import CnnGruPolicy
 from policies.cnn_policy_param_matched import CnnPolicy
+from policies.fc_policy_param_matched import FcPolicy
 from ppo_agent import PpoAgent
 from utils import set_global_seeds
 from vec_env import VecFrameStack
@@ -102,7 +103,7 @@ def main():
     parser.add_argument('--update_ob_stats_from_random_agent', type=int, default=1)
     parser.add_argument('--proportion_of_exp_used_for_predictor_update', type=float, default=1.)
     parser.add_argument('--tag', type=str, default='')
-    parser.add_argument('--policy', type=str, default='rnn', choices=['cnn', 'rnn'])
+    parser.add_argument('--policy', type=str, default='fc', choices=['fc'])
     parser.add_argument('--int_coeff', type=float, default=1.)
     parser.add_argument('--ext_coeff', type=float, default=2.)
     parser.add_argument('--dynamics_bonus', type=int, default=0)
