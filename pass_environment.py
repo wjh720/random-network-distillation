@@ -1,7 +1,7 @@
 import gym
 import matplotlib.pyplot as plt
 import numpy as np
-from baselines.Curiosity import Key_points
+from Curiosity import Key_points
 import copy
 
 

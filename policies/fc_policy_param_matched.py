@@ -91,10 +91,10 @@ class FcPolicy(StochasticPolicy):
     def apply_policy(ph_ob, reuse, scope, hidsize, memsize, extrahid, sy_nenvs, sy_nsteps, pdparamsize):
         data_format = 'NHWC'
         ph = ph_ob
-        assert len(ph.shape.as_list()) == 5  # B,T,H,W,C
+        assert len(ph.shape.as_list()) == 3  # B,T,H,W,C
         logger.info("CnnPolicy: using '%s' shape %s as image input" % (ph.name, str(ph.shape)))
         X = tf.cast(ph, tf.float32) / 255.
-        X = tf.reshape(X, (-1, *ph.shape.as_list()[-3:]))
+        X = tf.reshape(X, (-1, *ph.shape.as_list()[-1:]))
 
         activ = tf.nn.relu
         yes_gpu = any(get_available_gpus())
@@ -152,6 +152,7 @@ class FcPolicy(StochasticPolicy):
                 logger.info("FcTarget: using '%s' shape %s as image input" % (ph.name, str(ph.shape)))
                 xr = ph[:, 1:]
                 xr = tf.cast(xr, tf.float32)
+                xr = tf.reshape(xr, (-1, *ph.shape.as_list()[-1:]))[:, -1:]
                 xr = tf.clip_by_value((xr - self.ph_mean) / self.ph_std, -5.0, 5.0)
 
                 xr = tf.nn.leaky_relu(fc(xr, 'c1r', nh=rep_size, init_scale=np.sqrt(2)))

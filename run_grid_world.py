@@ -108,7 +108,7 @@ def common_arg_parser():
 	parser.add_argument('--env_type',
 						help='type of environment, used when the environment type cannot be automatically determined',
 						type=str)
-	parser.add_argument('--seed', help='RNG seed', type=int, default=None)
+	parser.add_argument('--seed', help='RNG seed', type=int, default=0)
 	parser.add_argument('--alg', help='Algorithm', type=str, default='ppo2')
 	parser.add_argument('--num_timesteps', type=float, default=1e6),
 	parser.add_argument('--network', help='network type (mlp, cnn, lstm, cnn_lstm, conv_only)', default=None)
@@ -164,6 +164,23 @@ def common_arg_parser():
 	parser.add_argument('--x_landmark_rew', default=10, type=int)
 	parser.add_argument('--not_view_landmark', default=False, action='store_true')
 	parser.add_argument('--appro_T', default=0.5, type=float)
+
+	parser.add_argument('--max_episode_steps', type=int, default=4500)
+	parser.add_argument('--num-timesteps', type=int, default=int(1e12))
+	parser.add_argument('--use_news', type=int, default=0)
+	parser.add_argument('--gamma', type=float, default=0.99)
+	parser.add_argument('--gamma_ext', type=float, default=0.99)
+	parser.add_argument('--lam', type=float, default=0.95)
+	parser.add_argument('--update_ob_stats_every_step', type=int, default=0)
+	parser.add_argument('--update_ob_stats_independently_per_gpu', type=int, default=0)
+	parser.add_argument('--update_ob_stats_from_random_agent', type=int, default=1)
+	parser.add_argument('--proportion_of_exp_used_for_predictor_update', type=float, default=1.)
+	parser.add_argument('--tag', type=str, default='')
+	parser.add_argument('--policy', type=str, default='fc', choices=['fc'])
+	parser.add_argument('--int_coeff', type=float, default=1.)
+	parser.add_argument('--ext_coeff', type=float, default=2.)
+	parser.add_argument('--dynamics_bonus', type=int, default=0)
+
 	return parser
 
 

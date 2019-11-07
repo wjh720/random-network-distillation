@@ -60,6 +60,7 @@ def setup_mpi_gpus():
     """
     Set CUDA_VISIBLE_DEVICES using MPI.
     """
+    '''
     available_gpus = guess_available_gpus()
 
     node_id = platform.node()
@@ -68,6 +69,7 @@ def setup_mpi_gpus():
     local_rank = len(processes_outranked_on_this_node)
     
     os.environ['CUDA_VISIBLE_DEVICES'] = str(available_gpus[local_rank])
+    '''
 
 
 def get_local_rank_size(comm):
