@@ -104,7 +104,7 @@ class Pass:
         info = {'door': self.door_open, 'state': copy.deepcopy(self.state_n)}
 
         if self.done():
-            info['episode'] = {'r': self.reward()[0], 'visited_rooms': (0)}
+            info['episode'] = {'r': self.reward()[0]}
 
         return self.obs_n()[0], self.reward()[0], self.done(), info
 
