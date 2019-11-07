@@ -49,7 +49,7 @@ class FcPolicy(StochasticPolicy):
         #Inputs to policy and value function will have different shapes depending on whether it is rollout
         #or optimization time, so we treat separately.
         self.pdparam_opt, self.vpred_int_opt, self.vpred_ext_opt, self.snext_opt = \
-            self.apply_policy(self.ph_ob[None],
+            self.apply_policy(self.ph_ob[None][:,:-1],
                               reuse=False,
                               scope=scope,
                               hidsize=hidsize,
@@ -92,7 +92,7 @@ class FcPolicy(StochasticPolicy):
         assert len(ph.shape.as_list()) == 3  # B,T,H,W,C
         logger.info("CnnPolicy: using '%s' shape %s as image input" % (ph.name, str(ph.shape)))
         #X = tf.cast(ph, tf.float32) / 255.
-        X = ph
+        X = tf.cast(ph, tf.float32)
         X = tf.reshape(X, (-1, *ph.shape.as_list()[-1:]))
 
         activ = tf.nn.relu
@@ -260,7 +260,7 @@ class FcPolicy(StochasticPolicy):
                 X_r_hat = fc(cond(X_r_hat), 'fc1r_hat3_pred', nh=rep_size, init_scale=np.sqrt(2))
             else:
                 logger.info("FcTarget: using '%s' shape %s as image input" % (ph.name, str(ph.shape)))
-                xrp = ph
+                xrp = ph[:, :-1]
                 xrp = tf.cast(xrp, tf.float32)
                 xrp = tf.reshape(xrp, (-1, *ph.shape.as_list()[-1:]))
 
