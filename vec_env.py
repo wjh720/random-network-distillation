@@ -2,6 +2,12 @@ from abc import ABC, abstractmethod
 from multiprocessing import Process, Pipe
 from baselines import logger
 from utils import tile_images
+from Curiosity import Dec, Pushball_Dec, C_points, Cen, Appro_C_points, Pushball_Appro_C_points, \
+	Island_Dec, Island_Appro_C_points, Island_Cen, Island_VI_Appro_C_points, Test_Island_Appro_C_points, x_Island_Cen, \
+	Pushball_Cen
+import pickle
+import matplotlib.pyplot as plt
+import copy
 
 
 class AlreadySteppingError(Exception):
@@ -100,9 +106,9 @@ class VecEnvWrapper(VecEnv):
 	def __init__(self, venv, observation_space=None, action_space=None):
 		self.venv = venv
 		VecEnv.__init__(self,
-		                num_envs=venv.num_envs,
-		                observation_space=observation_space or venv.observation_space,
-		                action_space=action_space or venv.action_space)
+						num_envs=venv.num_envs,
+						observation_space=observation_space or venv.observation_space,
+						action_space=action_space or venv.action_space)
 
 	def step_async(self, actions):
 		self.venv.step_async(actions)
@@ -251,7 +257,7 @@ class SubprocVecEnv(VecEnv):
 		nenvs = len(env_fns)
 		self.remotes, self.work_remotes = zip(*[Pipe() for _ in range(nenvs)])
 		self.ps = [Process(target=worker, args=(work_remote, remote, CloudpickleWrapper(env_fn)))
-		           for (work_remote, remote, env_fn) in zip(self.work_remotes, self.remotes, env_fns)]
+				   for (work_remote, remote, env_fn) in zip(self.work_remotes, self.remotes, env_fns)]
 		for p in self.ps:
 			p.daemon = True  # if the main process crashes, we should not cause things to hang
 			p.start()
@@ -308,3 +314,154 @@ class SubprocVecEnv(VecEnv):
 			return bigimg
 		else:
 			raise NotImplementedError
+
+
+class SubprocVecEnv_Pass(SubprocVecEnv):
+	"""
+	VecEnv that runs multiple environments in parallel in subproceses and communicates with them via pipes.
+	Recommended to use when num_envs > 1 and step() can be a bottleneck.
+	"""
+
+	def __init__(self, env_fns, args):
+		SubprocVecEnv.__init__(self, env_fns)
+		# For debugging
+		self.hot_map_save_path = args.save_path
+		self.ext_rewards = []
+		self.args = args
+		self.dec = Dec(self.args.size, self.args.n_agent, self.args)
+		self.cen = Cen(self.args.size, self.args.n_agent, self.args)
+		self.key_points = Appro_C_points(self.args.size, self.args.n_action, self.args, is_print=True)
+		self.pre_state_n = [None for i in range(self.num_envs)]
+		self.e_step = 0
+
+	def dec_curiosity(self, state, i):
+		return self.dec.output(state, i)
+
+	def coor_curiosity(self, data_1, data_2, i):
+		return self.key_points.output(data_1, data_2, i)
+
+	def ma_reshape(self, obs, i):
+		obs = np.array(obs)
+		index = [i for i in range(len(obs.shape))]
+		index[0] = i
+		index[i] = 0
+		return np.transpose(obs, index).copy()
+
+	def smooth(self, data):
+
+		smoothed = []
+
+		for i in range(len(data)):
+			smoothed.append(np.mean(data[max(0, i + 1 - 100): i + 1]))
+
+		return smoothed
+
+	def save_results(self, er2, name, arg):
+		filename = '%s/%s_data.pkl' % (arg.save_path, name)
+		with open(filename, 'wb') as file:
+			pickle.dump(er2, file)
+
+		# er3 = q_cen_for_pass()
+
+		# er1_s = smooth(er1)
+		er2_s = self.smooth(er2)
+		# er3_s = smooth(er3)
+
+		m_figure = plt.figure()
+		m_ax1 = m_figure.add_subplot(3, 2, 1)
+		m_ax2 = m_figure.add_subplot(3, 2, 2)
+		m_ax3 = m_figure.add_subplot(3, 2, 3)
+		m_ax4 = m_figure.add_subplot(3, 2, 4)
+		m_ax5 = m_figure.add_subplot(3, 2, 5)
+		m_ax6 = m_figure.add_subplot(3, 2, 6)
+
+		# m_ax1.plot(er1_s)
+		# m_ax2.plot(er1)
+		m_ax3.plot(er2_s)
+		m_ax4.plot(er2)
+		# m_ax5.plot(er3_s)
+		# m_ax6.plot(er3)
+
+		m_ax1.legend(['epsilon-greedy'])
+		m_ax2.legend(['epsilon-greedy (unsmoothed)'])
+		m_ax3.legend(['dec-curiosity'])
+		m_ax4.legend(['dec-curiosity (unsmoothed)'])
+		m_ax5.legend(['cen-curiosity'])
+		m_ax6.legend(['cen-curiosity (unsmoothed)'])
+
+		m_figure.savefig('%s/%s_i Boltzmann.png' % (arg.save_path, name))
+		plt.close(m_figure)
+
+	def reset(self):
+		for remote in self.remotes:
+			remote.send(('reset', None))
+		obs_n = _flatten_obs([remote.recv() for remote in self.remotes])
+		return obs_n
+
+	def step(self, actions):
+		self.step_async(actions)
+		obs, ext_rewards, dones, infos = self.step_wait()
+		ext_rewards = self.ma_reshape(ext_rewards, 1).astype('float32')
+		state_n = []
+		for i in range(self.num_envs):
+			state_n.append(copy.deepcopy(infos[i]['state']))
+			infos[i]['pre_state'] = self.pre_state_n[i]
+
+		# estimate coor
+		for j in range(self.num_envs):
+			if self.pre_state_n[j] != None:
+				self.key_points.update([self.pre_state_n[j], actions[j]], [state_n[j], None])
+
+		# add intrinsic rew
+		dec_rewards = ext_rewards.copy()
+		coor_rewards = ext_rewards.copy()
+		penalty_rewards = ext_rewards.copy()
+		cen_rewards = ext_rewards.copy()
+		for i in range(self.args.n_agent):
+			for j in range(self.num_envs):
+				dec_rewards[i, j] = self.args.gamma_dec * self.dec_curiosity(state_n[j], i)
+				if self.pre_state_n[j] != None:
+					coor_rewards[i, j] = self.coor_curiosity([self.pre_state_n[j], actions[j]], [state_n[j], None], i)
+				else:
+					coor_rewards[i, j] = 0.
+				cen_rewards[i, j] = self.args.gamma_cen * self.cen.output(state_n[j])
+				penalty_rewards[i, j] = self.args.penalty
+		# update intrinsic rew
+		for j in range(self.num_envs):
+			self.dec.update(state_n[j], infos[j]['door'])
+			self.cen.update(state_n[j])
+
+		self.pre_state_n = state_n
+		for i in range(self.num_envs):
+			if dones[i]:
+				self.pre_state_n[i] = None
+
+		# debug
+		for i in range(self.num_envs):
+			if dones[i]:
+				self.e_step += 1
+				self.ext_rewards.append(ext_rewards[0, i])
+
+				s_rate = self.args.t_save_rate
+				if (self.e_step + 1) % (1000 * s_rate) == 0:
+					print(self.e_step + 1, float(sum(self.ext_rewards[-1000 * s_rate:])) / (1000.0 * s_rate))
+					self.dec.show(self.hot_map_save_path, self.e_step + 1)
+
+				if (self.e_step + 1) % (100000 * s_rate) == 0:
+					self.key_points.show(self.e_step + 1)
+
+				if (self.e_step + 1) % (100000 * s_rate) == 0:
+					self.save_results(self.ext_rewards, '%d' % (self.e_step + 1), self.args)
+
+		return obs, (ext_rewards, dec_rewards, coor_rewards, penalty_rewards, cen_rewards), dones, infos
+
+
+def _flatten_obs(obs):
+	assert isinstance(obs, (list, tuple))
+	assert len(obs) > 0
+
+	if isinstance(obs[0], dict):
+		keys = obs[0].keys()
+		return {k: np.stack([o[k] for o in obs]) for k in keys}
+	else:
+		return np.stack(obs)
