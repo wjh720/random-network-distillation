@@ -38,8 +38,6 @@ class FcPolicy(StochasticPolicy):
             'large': 4
         }[policy_size]
         rep_size = 128
-        self.ph_mean = tf.placeholder(dtype=tf.float32, shape=list(ob_space.shape[:2])+[1], name="obmean")
-        self.ph_std = tf.placeholder(dtype=tf.float32, shape=list(ob_space.shape[:2])+[1], name="obstd")
         memsize *= enlargement
         hidsize *= enlargement
         convfeat = 16*enlargement
@@ -93,7 +91,8 @@ class FcPolicy(StochasticPolicy):
         ph = ph_ob
         assert len(ph.shape.as_list()) == 3  # B,T,H,W,C
         logger.info("CnnPolicy: using '%s' shape %s as image input" % (ph.name, str(ph.shape)))
-        X = tf.cast(ph, tf.float32) / 255.
+        #X = tf.cast(ph, tf.float32) / 255.
+        X = ph
         X = tf.reshape(X, (-1, *ph.shape.as_list()[-1:]))
 
         activ = tf.nn.relu
@@ -303,7 +302,6 @@ class FcPolicy(StochasticPolicy):
         # It will use whatever observation spaces saved to disk along with other ctor params.
         feed1 = { self.ph_ob[k]: dict_obs[k][:,None] for k in self.ph_ob_keys }
         feed2 = { self.ph_istate: istate, self.ph_new: new[:,None].astype(np.float32) }
-        feed1.update({self.ph_mean: self.ob_rms.mean, self.ph_std: self.ob_rms.var ** 0.5})
         # for f in feed1:
         #     print(f)
         a, vpred_int,vpred_ext, nlp, newstate, ent = tf.get_default_session().run(
