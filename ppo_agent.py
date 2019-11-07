@@ -378,7 +378,7 @@ class PpoAgent(object):
                 [fd[self.stochpol.ph_ob[None]].shape, [self.I.nenvs//self.nminibatches, self.nsteps + 1] + list(self.ob_space.shape)]
             fd.update({self.stochpol.ph_mean:self.stochpol.ob_rms.mean, self.stochpol.ph_std:self.stochpol.ob_rms.var**0.5})
 
-            ret = tf.get_default_session().run(self._losses+[self._train], feed_dict=fd)[:-1]
+            ret = tf.get_default_session().run(self._losses+[self._train], feed_dict=fd)
             if not self.testing:
                 lossdict = dict(zip([n for n in self.loss_names], ret), axis=0)
             else:
