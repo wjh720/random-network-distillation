@@ -37,7 +37,7 @@ class FcPolicy(StochasticPolicy):
             'normal': 2,
             'large': 4
         }[policy_size]
-        rep_size = 512
+        rep_size = 128
         self.ph_mean = tf.placeholder(dtype=tf.float32, shape=list(ob_space.shape[:2])+[1], name="obmean")
         self.ph_std = tf.placeholder(dtype=tf.float32, shape=list(ob_space.shape[:2])+[1], name="obstd")
         memsize *= enlargement
@@ -153,7 +153,6 @@ class FcPolicy(StochasticPolicy):
                 xr = ph[:, 1:]
                 xr = tf.cast(xr, tf.float32)
                 xr = tf.reshape(xr, (-1, *ph.shape.as_list()[-1:]))[:, -1:]
-                xr = tf.clip_by_value((xr - self.ph_mean) / self.ph_std, -5.0, 5.0)
 
                 xr = tf.nn.leaky_relu(fc(xr, 'c1r', nh=rep_size, init_scale=np.sqrt(2)))
                 xr = tf.nn.leaky_relu(fc(xr, 'c2r', nh=rep_size, init_scale=np.sqrt(2)))
@@ -182,7 +181,7 @@ class FcPolicy(StochasticPolicy):
                 logger.info("FcTarget: using '%s' shape %s as image input" % (ph.name, str(ph.shape)))
                 xrp = ph[:, 1:]
                 xrp = tf.cast(xrp, tf.float32)
-                xrp = tf.clip_by_value((xrp - self.ph_mean) / self.ph_std, -5.0, 5.0)
+                xrp = tf.reshape(xrp, (-1, *ph.shape.as_list()[-1:]))[:, -1:]
 
                 xrp = tf.nn.leaky_relu(fc(xrp, 'c1rp_pred', nh=8 * enlargement, init_scale=np.sqrt(2)))
                 xrp = tf.nn.leaky_relu(fc(xrp, 'c2rp_pred', nh=8 * enlargement, init_scale=np.sqrt(2)))
@@ -226,8 +225,7 @@ class FcPolicy(StochasticPolicy):
                 logger.info("FcTarget: using '%s' shape %s as image input" % (ph.name, str(ph.shape)))
                 xr = ph[:, 1:]
                 xr = tf.cast(xr, tf.float32)
-                xr = tf.reshape(xr, (-1, *ph.shape.as_list()[-3:]))[:, :, :, -1:]
-                xr = tf.clip_by_value((xr - self.ph_mean) / self.ph_std, -5.0, 5.0)
+                xr = tf.reshape(xr, (-1, *ph.shape.as_list()[-1:]))[:, -1:]
 
                 xr = tf.nn.leaky_relu(fc(xr, 'c1r', nh=rep_size, init_scale=np.sqrt(2)))
                 xr = tf.nn.leaky_relu(fc(xr, 'c2r', nh=rep_size, init_scale=np.sqrt(2)))
@@ -265,9 +263,7 @@ class FcPolicy(StochasticPolicy):
                 logger.info("FcTarget: using '%s' shape %s as image input" % (ph.name, str(ph.shape)))
                 xrp = ph[:, :-1]
                 xrp = tf.cast(xrp, tf.float32)
-                xrp = tf.reshape(xrp, (-1, *ph.shape.as_list()[-3:]))
-                # ph_mean, ph_std are 84x84x1, so we subtract the average of the last channel from all channels. Is this ok?
-                xrp = tf.clip_by_value((xrp - self.ph_mean) / self.ph_std, -5.0, 5.0)
+                xrp = tf.reshape(xrp, (-1, *ph.shape.as_list()[-1:]))
 
                 xrp = tf.nn.leaky_relu(fc(xrp, 'c1rp_pred', nh=8 * enlargement, init_scale=np.sqrt(2)))
                 xrp = tf.nn.leaky_relu(fc(xrp, 'c2rp_pred', nh=8 * enlargement, init_scale=np.sqrt(2)))
