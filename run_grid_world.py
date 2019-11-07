@@ -18,8 +18,8 @@ from vec_env import VecFrameStack
 def train(*, env_id, num_env, hps, num_timesteps, seed):
 	venv = VecFrameStack(
 		make_atari_env(env_id, num_env, seed, wrapper_kwargs=dict(),
-		               start_index=num_env * MPI.COMM_WORLD.Get_rank(),
-		               max_episode_steps=hps.pop('max_episode_steps')),
+					   start_index=num_env * MPI.COMM_WORLD.Get_rank(),
+					   max_episode_steps=hps.pop('max_episode_steps')),
 		hps.pop('frame_stack'))
 	# venv.score_multiple = {'Mario': 500,
 	#                        'MontezumaRevengeNoFrameskip-v4': 100,
@@ -35,7 +35,7 @@ def train(*, env_id, num_env, hps, num_timesteps, seed):
 	ac_space = venv.action_space
 	gamma = hps.pop('gamma')
 	policy = {'rnn': CnnGruPolicy,
-	          'cnn': CnnPolicy}[hps.pop('policy')]
+			  'cnn': CnnPolicy}[hps.pop('policy')]
 	agent = PpoAgent(
 		scope='ppo',
 		ob_space=ob_space,
@@ -96,19 +96,19 @@ def common_arg_parser():
 	parser = arg_parser()
 	parser.add_argument('--env', help='environment ID', type=str, default='Reacher-v2')
 	parser.add_argument('--env_type',
-	                    help='type of environment, used when the environment type cannot be automatically determined',
-	                    type=str)
+						help='type of environment, used when the environment type cannot be automatically determined',
+						type=str)
 	parser.add_argument('--seed', help='RNG seed', type=int, default=None)
 	parser.add_argument('--alg', help='Algorithm', type=str, default='ppo2')
 	parser.add_argument('--num_timesteps', type=float, default=1e6),
 	parser.add_argument('--network', help='network type (mlp, cnn, lstm, cnn_lstm, conv_only)', default=None)
 	parser.add_argument('--gamestate', help='game state to load (so far only used in retro games)', default=None)
 	parser.add_argument('--num_env',
-	                    help='Number of environment copies being run in parallel. When not specified, set to number of cpus for Atari, and to 1 for Mujoco',
-	                    default=1, type=int)
+						help='Number of environment copies being run in parallel. When not specified, set to number of cpus for Atari, and to 1 for Mujoco',
+						default=1, type=int)
 	parser.add_argument('--reward_scale', help='Reward scale factor. Default: 1.0', default=1.0, type=float)
 	parser.add_argument('--save_path', help='Path to save trained model to',
-	                    default='../../results/PPO/try_1/Random_start/', type=str)
+						default='../../results/PPO/try_1/Random_start/', type=str)
 	parser.add_argument('--save_video_interval', help='Save video every x steps (0 = disabled)', default=0, type=int)
 	parser.add_argument('--save_video_length', help='Length of recorded video. Default: 200', default=200, type=int)
 	parser.add_argument('--play', default=False, action='store_true')
@@ -158,6 +158,8 @@ def common_arg_parser():
 
 
 def main():
+	parser = common_arg_parser()
+	'''
 	parser = arg_parser()
 	add_env_params(parser)
 	parser.add_argument('--num-timesteps', type=int, default=int(1e12))
@@ -175,14 +177,15 @@ def main():
 	parser.add_argument('--int_coeff', type=float, default=1.)
 	parser.add_argument('--ext_coeff', type=float, default=2.)
 	parser.add_argument('--dynamics_bonus', type=int, default=0)
+	'''
 
 	args = parser.parse_args()
 	logger.configure(dir=logger.get_dir(),
-	                 format_strs=['stdout', 'log', 'csv'] if MPI.COMM_WORLD.Get_rank() == 0 else [])
+					 format_strs=['stdout', 'log', 'csv'] if MPI.COMM_WORLD.Get_rank() == 0 else [])
 	if MPI.COMM_WORLD.Get_rank() == 0:
 		with open(os.path.join(logger.get_dir(), 'experiment_tag.txt'), 'w') as f:
 			f.write(args.tag)
-		# shutil.copytree(os.path.dirname(os.path.abspath(__file__)), os.path.join(logger.get_dir(), 'code'))
+	# shutil.copytree(os.path.dirname(os.path.abspath(__file__)), os.path.join(logger.get_dir(), 'code'))
 
 	mpi_util.setup_mpi_gpus()
 
@@ -212,7 +215,7 @@ def main():
 
 	tf_util.make_session(make_default=True)
 	train(env_id=args.env, num_env=args.num_env, seed=seed,
-	      num_timesteps=args.num_timesteps, hps=hps)
+		  num_timesteps=args.num_timesteps, hps=hps)
 
 
 if __name__ == '__main__':
