@@ -65,7 +65,7 @@ def make_multi_pass_env(env_id, env_type, num_env, seed, args, wrapper_kwargs=No
 			wrapper_kwargs=wrapper_kwargs
 		)
 
-	return SubprocVecEnv_Pass([make_thunk(i + start_index) for i in range(num_env)], args)
+	return SubprocVecEnv([make_thunk(i + start_index) for i in range(num_env)], args)
 
 
 def make_pushball_env(env_id, env_type, num_env, seed, args, subrank=0, wrapper_kwargs=None, start_index=0,
@@ -95,7 +95,7 @@ def make_m_pushball_env(env_id, env_type, num_env, seed, args, wrapper_kwargs=No
 			wrapper_kwargs=wrapper_kwargs
 		)
 
-	return SubprocVecEnv_PushBall([make_thunk(i + start_index) for i in range(num_env)], args)
+	return SubprocVecEnv([make_thunk(i + start_index) for i in range(num_env)], args)
 
 
 def make_x_island_env(env_id, env_type, num_env, seed, args, subrank=0, wrapper_kwargs=None, start_index=0,
@@ -126,7 +126,7 @@ def make_m_x_island_env(env_id, env_type, num_env, seed, args, wrapper_kwargs=No
 			wrapper_kwargs=wrapper_kwargs
 		)
 
-	return SubprocVecEnv_x_Island([make_thunk(i + start_index) for i in range(num_env)], args)
+	return SubprocVecEnv([make_thunk(i + start_index) for i in range(num_env)], args)
 
 
 def make_island_env(env_id, env_type, num_env, seed, args, subrank=0, wrapper_kwargs=None, start_index=0,
@@ -157,7 +157,7 @@ def make_m_island_env(env_id, env_type, num_env, seed, args, wrapper_kwargs=None
 			wrapper_kwargs=wrapper_kwargs
 		)
 
-	return SubprocVecEnv_Island([make_thunk(i + start_index) for i in range(num_env)], args)
+	return SubprocVecEnv([make_thunk(i + start_index) for i in range(num_env)], args)
 
 
 def arg_parser():

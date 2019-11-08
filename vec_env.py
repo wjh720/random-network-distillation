@@ -416,7 +416,7 @@ class SubprocVecEnv_Pass(SubprocVecEnv):
 				if (self.e_step + 1) % (100000 * s_rate) == 0:
 					self.save_results(self.ext_rewards, '%d' % (self.e_step + 1), self.args)
 
-		return obs, (ext_rewards, dec_rewards, coor_rewards, penalty_rewards, cen_rewards), dones, infos
+		return obs, ext_rewards, dones, infos
 
 
 class SubprocVecEnv_Island(SubprocVecEnv_Pass):
@@ -518,7 +518,7 @@ class SubprocVecEnv_Island(SubprocVecEnv_Pass):
 				if (self.e_step + 1) % (100000 * s_rate) == 0:
 					self.save_results(self.ext_rewards, '%d' % (self.e_step + 1), self.args)
 
-		return obs, (ext_rewards, dec_rewards, coor_rewards, penalty_rewards, cen_rewards), dones, infos
+		return obs, ext_rewards, dones, infos
 
 
 class SubprocVecEnv_x_Island(SubprocVecEnv_Pass):
