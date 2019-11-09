@@ -251,15 +251,15 @@ class Island:
 
 		info = {'wolf': self.wolf_n, 'state': copy.deepcopy(info_state_n)}
 
-		self.sum_rew += self.reward()[0]
-		if self.done():
-			info['episode'] = {'r': self.sum_rew, 'l': self.t_step}
-
 		return_obs = self.obs_n()
 		return_rew, info_r = self.reward()
 		return_done = self.done()
 
 		info['rew'] = info_r
+
+		self.sum_rew += return_rew[0]
+		if self.done():
+			info['episode'] = {'r': self.sum_rew, 'l': self.t_step}
 
 		return return_obs[0], return_rew[0], return_done, info
 
