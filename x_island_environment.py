@@ -117,6 +117,8 @@ class x_Island:
 		self.t_step = 0
 		self.agent_power_zeros_like = np.zeros_like(self.agent_power)
 
+		self.sum_rew = 0
+
 	def reset(self):
 
 		if self.args.x_num_landmark <= 25:
@@ -139,6 +141,8 @@ class x_Island:
 		self.agent_score = [[0. for _ in range(self.n_agent)] for _ in range(self.n_wolf)]
 
 		self.t_step = 0
+
+		self.sum_rew = 0
 
 		return self.obs_n()[0]
 
@@ -270,6 +274,10 @@ class x_Island:
 			info_state_n.append(full_state)
 
 		info = {'wolf': self.wolf_n, 'state': copy.deepcopy(info_state_n)}
+
+		self.sum_rew += self.reward()[0]
+		if self.done():
+			info['episode'] = {'r': self.sum_rew, 'l': self.t_step}
 
 		return_obs = self.obs_n()
 		return_rew, info_r = self.reward()
