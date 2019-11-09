@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from Curiosity import Key_points
 import copy
+import random
 
 
 class Pass:
@@ -12,6 +13,10 @@ class Pass:
         self.initialization(args)
 
     def initialization(self, args):
+
+        self.seed = random.randint(0, 9999)
+        np.random.seed(self.seed)
+
         self.is_print = self.rank == 0
 
         self.args = args

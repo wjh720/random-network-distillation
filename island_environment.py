@@ -1,6 +1,7 @@
 import gym
 import numpy as np
 import copy
+import random
 
 
 class Island:
@@ -11,6 +12,10 @@ class Island:
 		self.initialization(args)
 
 	def initialization(self, args):
+
+		self.seed = random.randint(0, 9999)
+		np.random.seed(self.seed)
+
 		self.is_print = self.rank == 0
 		self.n_agent = args.n_agent
 		self.n_action = 6

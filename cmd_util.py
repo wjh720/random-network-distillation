@@ -11,7 +11,6 @@ from baselines import logger
 from monitor import Monitor
 from atari_wrappers import make_atari, wrap_deepmind
 from vec_env import SubprocVecEnv
-from vec_env import SubprocVecEnv_Pass, SubprocVecEnv_Island, SubprocVecEnv_PushBall, SubprocVecEnv_x_Island
 from pass_environment import Pass
 from island_environment import Island
 from pushball_environment import PushBall
