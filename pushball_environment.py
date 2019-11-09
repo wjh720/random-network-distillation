@@ -184,14 +184,14 @@ class PushBall:
 
 		info = {'ball': self.ball_n, 'state': copy.deepcopy(info_state_n)}
 
-		if self.done():
-			info['episode'] = {'r': self.reward()[0], 'l': self.args.episode_length}
-
 		return_obs = self.obs_n()
 		return_rew, info_r = self.reward()
 		return_done = self.done()
 
 		info['rew'] = info_r
+
+		if self.done():
+			info['episode'] = {'r': return_rew[0], 'l': self.args.episode_length}
 
 		return return_obs[0], return_rew[0], return_done, info
 
