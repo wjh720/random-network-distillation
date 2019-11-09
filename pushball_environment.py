@@ -190,7 +190,7 @@ class PushBall:
 
 		info['rew'] = info_r
 
-		if self.done():
+		if return_done:
 			info['episode'] = {'r': return_rew[0], 'l': self.args.episode_length}
 
 		return return_obs[0], return_rew[0], return_done, info
