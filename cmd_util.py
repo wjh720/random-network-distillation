@@ -12,6 +12,7 @@ from monitor import Monitor
 from atari_wrappers import make_atari, wrap_deepmind
 from vec_env import SubprocVecEnv
 from pass_environment import Pass
+from pass_environment import ThreePass
 from island_environment import Island
 from pushball_environment import PushBall
 from x_island_environment import x_Island
@@ -34,6 +35,37 @@ def make_atari_env(env_id, num_env, seed, wrapper_kwargs=None, start_index=0, ma
 
 	# set_global_seeds(seed)
 	return SubprocVecEnv([make_env(i + start_index) for i in range(num_env)])
+
+
+def make_three_pass_env(env_id, env_type, num_env, seed, args, subrank=0, wrapper_kwargs=None, start_index=0,
+                        reward_scale=1.0):
+	env = ThreePass(args, subrank)
+	env.initialization(args)
+
+	return env
+
+
+def make_m_three_pass_env(env_id, env_type, num_env, seed, args, wrapper_kwargs=None, start_index=0, reward_scale=1.0,
+                          flatten_dict_observations=True,
+                          gamestate=None):
+	wrapper_kwargs = wrapper_kwargs or {}
+	mpi_rank = MPI.COMM_WORLD.Get_rank() if MPI else 0
+	seed = seed + 10000 * mpi_rank if seed is not None else None
+	logger_dir = logger.get_dir()
+
+	def make_thunk(rank):
+		return lambda: make_three_pass_env(
+			env_id=env_id,
+			env_type=env_type,
+			subrank=rank,
+			num_env=1,
+			seed=seed,
+			args=args,
+			reward_scale=reward_scale,
+			wrapper_kwargs=wrapper_kwargs
+		)
+
+	return SubprocVecEnv_ThreePass([make_thunk(i + start_index) for i in range(num_env)], args)
 
 
 def make_pass_env(env_id, env_type, num_env, seed, args, subrank=0, wrapper_kwargs=None, start_index=0,

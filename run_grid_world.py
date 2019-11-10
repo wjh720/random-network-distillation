@@ -20,6 +20,8 @@ def get_venv(args, env_id, num_env, seed, hps):
 	env_type = args.env
 	if env_type == 'pass':
 		env = make_multi_pass_env(env_id, env_type, num_env, seed, args)
+	elif env_type == 'threepass':
+		env = make_multi_pass_env(env_id, env_type, num_env, seed, args)
 	elif env_type == 'island':
 		env = make_m_island_env(env_id, env_type, num_env, seed, args)
 	elif env_type == 'x_island':
