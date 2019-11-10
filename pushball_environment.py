@@ -16,7 +16,10 @@ class PushBall:
 		# return np.array([self.size // 2, self.size // 2])
 		# return np.array(np.random.randint(self.size // 4, self.size // 4 * 3, [self.n_dim]))
 		# return np.array(np.random.randint(1, self.size - 1, [self.n_dim]))
-		return np.array(np.random.randint(4, 11, [self.n_dim]))
+		if self.size == 15:
+			return np.array(np.random.randint(4, 12, [self.n_dim]))
+		elif self.size == 10:
+			return np.array(np.random.randint(4, 7, [self.n_dim]))
 
 	def random_start_n(self):
 		ball_list = []
