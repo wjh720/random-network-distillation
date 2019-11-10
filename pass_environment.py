@@ -108,10 +108,16 @@ class Pass:
 
         info = {'door': self.door_open, 'state': copy.deepcopy(self.state_n)}
 
-        if self.done():
-            info['episode'] = {'r': self.reward()[0], 'l': self.args.episode_length}
+        pre_t_step = self.t_step
 
-        return self.obs_n()[0], self.reward()[0], self.done(), info
+        return_obs = self.obs_n()
+        return_rew = self.reward()
+        return_done = self.done()
+
+        if return_done:
+            info['episode'] = {'r': return_rew[0], 'l': pre_t_step}
+
+        return return_obs[0], return_rew[0], return_done, info
 
     def fix_reset(self):
         self.t_step = 0

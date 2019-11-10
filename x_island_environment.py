@@ -276,6 +276,7 @@ class x_Island:
 		info = {'wolf': self.wolf_n, 'state': copy.deepcopy(info_state_n)}
 
 		pre_sum_rew = self.sum_rew
+		pre_t_step = self.t_step
 
 		return_obs = self.obs_n()
 		return_rew, info_r = self.reward()
@@ -285,7 +286,7 @@ class x_Island:
 
 		pre_sum_rew += return_rew[0]
 		if return_done:
-			info['episode'] = {'r': pre_sum_rew, 'l': self.t_step}
+			info['episode'] = {'r': pre_sum_rew, 'l': pre_t_step}
 		else:
 			self.sum_rew += return_rew[0]
 
