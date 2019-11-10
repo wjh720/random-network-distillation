@@ -37,7 +37,7 @@ class FcPolicy(StochasticPolicy):
             'normal': 2,
             'large': 4
         }[policy_size]
-        rep_size = 128
+        rep_size = 64
         memsize *= enlargement
         hidsize *= enlargement
         convfeat = 16*enlargement
@@ -110,7 +110,7 @@ class FcPolicy(StochasticPolicy):
             mix_other_observations = [X]
             X = tf.concat(mix_other_observations, axis=1)
             X = activ(fc(X, 'fc1', nh=hidsize, init_scale=np.sqrt(2)))
-            additional_size = 448
+            additional_size = 128
             X = activ(fc(X, 'fc_additional', nh=additional_size, init_scale=np.sqrt(2)))
             snext = tf.zeros((sy_nenvs, memsize))
             mix_timeout = [X]
