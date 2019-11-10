@@ -1,7 +1,6 @@
 import gym
 import matplotlib.pyplot as plt
 import numpy as np
-from baselines.Curiosity import Key_points
 import copy
 
 
@@ -116,7 +115,16 @@ class ThreePass:
 
         info = {'door': self.door_open_n, 'state': copy.deepcopy(self.state_n)}
 
-        return self.obs_n(), self.reward(), self.done(), info
+        pre_t_step = self.t_step
+
+        return_obs = self.obs_n()
+        return_rew = self.reward()
+        return_done = self.done()
+
+        if return_done:
+            info['episode'] = {'r': return_rew[0], 'l': pre_t_step}
+
+        return return_obs[0], return_rew[0], return_done, info
 
     def fix_reset(self):
         self.t_step = 0
