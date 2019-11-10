@@ -12,7 +12,7 @@ from monitor import Monitor
 from atari_wrappers import make_atari, wrap_deepmind
 from vec_env import SubprocVecEnv
 from pass_environment import Pass
-from pass_environment import ThreePass
+from three_pass_environment import ThreePass
 from island_environment import Island
 from pushball_environment import PushBall
 from x_island_environment import x_Island
