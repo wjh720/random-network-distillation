@@ -262,6 +262,8 @@ class Island:
 		pre_sum_rew += return_rew[0]
 		if return_done:
 			info['episode'] = {'r': pre_sum_rew, 'l': self.t_step}
+		else:
+			self.sum_rew += return_rew[0]
 
 		return return_obs[0], return_rew[0], return_done, info
 
