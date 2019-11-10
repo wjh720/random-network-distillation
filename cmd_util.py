@@ -65,7 +65,7 @@ def make_m_three_pass_env(env_id, env_type, num_env, seed, args, wrapper_kwargs=
 			wrapper_kwargs=wrapper_kwargs
 		)
 
-	return SubprocVecEnv_ThreePass([make_thunk(i + start_index) for i in range(num_env)], args)
+	return SubprocVecEnv([make_thunk(i + start_index) for i in range(num_env)], args)
 
 
 def make_pass_env(env_id, env_type, num_env, seed, args, subrank=0, wrapper_kwargs=None, start_index=0,

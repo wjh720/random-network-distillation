@@ -13,7 +13,8 @@ from policies.fc_policy_param_matched import FcPolicy
 from ppo_agent import PpoAgent
 from utils import set_global_seeds
 from vec_env import VecFrameStack
-from cmd_util import make_multi_pass_env, make_m_island_env, make_m_pushball_env, make_m_x_island_env
+from cmd_util import make_multi_pass_env, make_m_island_env, make_m_pushball_env, make_m_x_island_env, \
+	make_m_three_pass_env
 
 
 def get_venv(args, env_id, num_env, seed, hps):
@@ -21,7 +22,7 @@ def get_venv(args, env_id, num_env, seed, hps):
 	if env_type == 'pass':
 		env = make_multi_pass_env(env_id, env_type, num_env, seed, args)
 	elif env_type == 'threepass':
-		env = make_multi_pass_env(env_id, env_type, num_env, seed, args)
+		env = make_m_three_pass_env(env_id, env_type, num_env, seed, args)
 	elif env_type == 'island':
 		env = make_m_island_env(env_id, env_type, num_env, seed, args)
 	elif env_type == 'x_island':
