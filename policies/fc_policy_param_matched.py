@@ -182,9 +182,9 @@ class FcPolicy(StochasticPolicy):
                 xrp = tf.cast(xrp, tf.float32)
                 xrp = tf.reshape(xrp, (-1, *ph.shape.as_list()[-1:]))
 
-                xrp = tf.nn.leaky_relu(fc(xrp, 'c1rp_pred', nh=8 * enlargement, init_scale=np.sqrt(2)))
-                xrp = tf.nn.leaky_relu(fc(xrp, 'c2rp_pred', nh=8 * enlargement, init_scale=np.sqrt(2)))
-                xrp = tf.nn.leaky_relu(fc(xrp, 'c3rp_pred', nh=8 * enlargement, init_scale=np.sqrt(2)))
+                xrp = tf.nn.leaky_relu(fc(xrp, 'c1rp_pred', nh=rep_size, init_scale=np.sqrt(2)))
+                xrp = tf.nn.leaky_relu(fc(xrp, 'c2rp_pred', nh=rep_size, init_scale=np.sqrt(2)))
+                xrp = tf.nn.leaky_relu(fc(xrp, 'c3rp_pred', nh=rep_size, init_scale=np.sqrt(2)))
                 rgbrp = to2d(xrp)
                 # X_r_hat = tf.nn.relu(fc(rgb[0], 'fc1r_hat1', nh=256 * enlargement, init_scale=np.sqrt(2)))
                 X_r_hat = tf.nn.relu(fc(rgbrp, 'fc1r_hat1_pred', nh=256 * enlargement, init_scale=np.sqrt(2)))
@@ -264,9 +264,9 @@ class FcPolicy(StochasticPolicy):
                 xrp = tf.cast(xrp, tf.float32)
                 xrp = tf.reshape(xrp, (-1, *ph.shape.as_list()[-1:]))
 
-                xrp = tf.nn.leaky_relu(fc(xrp, 'c1rp_pred', nh=8 * enlargement, init_scale=np.sqrt(2)))
-                xrp = tf.nn.leaky_relu(fc(xrp, 'c2rp_pred', nh=8 * enlargement, init_scale=np.sqrt(2)))
-                xrp = tf.nn.leaky_relu(fc(xrp, 'c3rp_pred', nh=8 * enlargement, init_scale=np.sqrt(2)))
+                xrp = tf.nn.leaky_relu(fc(xrp, 'c1rp_pred', nh=rep_size, init_scale=np.sqrt(2)))
+                xrp = tf.nn.leaky_relu(fc(xrp, 'c2rp_pred', nh=rep_size, init_scale=np.sqrt(2)))
+                xrp = tf.nn.leaky_relu(fc(xrp, 'c3rp_pred', nh=rep_size, init_scale=np.sqrt(2)))
                 rgbrp = to2d(xrp)
 
                 # X_r_hat = tf.nn.relu(fc(rgb[0], 'fc1r_hat1', nh=256 * enlargement, init_scale=np.sqrt(2)))
