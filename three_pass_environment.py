@@ -154,7 +154,7 @@ class ThreePass:
         # if obs_d:
         #     return self.observations_d()
 
-        return self.obs_n()
+        return self.obs_n()[0]
 
     def random_reset(self, obs_d=False):
         self.t_step = 0
