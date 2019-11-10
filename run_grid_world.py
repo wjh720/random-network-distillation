@@ -207,6 +207,7 @@ def main():
 	'''
 
 	args = parser.parse_args()
+	print(logger.get_dir())
 	logger.configure(dir=logger.get_dir(),
 					 format_strs=['stdout', 'log', 'csv'] if MPI.COMM_WORLD.Get_rank() == 0 else [])
 	if MPI.COMM_WORLD.Get_rank() == 0:
