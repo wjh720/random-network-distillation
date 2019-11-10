@@ -56,7 +56,7 @@ class ThreePass:
         self.flag = np.eye(2)
 
         # Used by OpenAI baselines
-        self.action_space = gym.spaces.Discrete(self.n_action)
+        self.action_space = gym.spaces.MultiDiscrete([self.n_action, self.n_action])
         self.observation_space = gym.spaces.Box(low=-1, high=1, shape=[args.size * 4])
         self.num_envs = args.num_env
         self.metadata = {'render.modes': []}
