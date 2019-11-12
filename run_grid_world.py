@@ -32,6 +32,7 @@ def get_venv(args, env_id, num_env, seed, hps):
 	venv = VecFrameStack(env, hps.pop('frame_stack'))
 	return venv
 
+
 def train(*, env_id, num_env, hps, num_timesteps, seed, args):
 	venv = get_venv(args, env_id, num_env, seed, hps)
 
@@ -81,7 +82,7 @@ def train(*, env_id, num_env, hps, num_timesteps, seed, args):
 	agent.start_interaction([venv])
 	if hps.pop('update_ob_stats_from_random_agent'):
 		agent.collect_random_statistics(num_timesteps=128 * 50)
-	#assert len(hps) == 0, "Unused hyperparameters: %s" % list(hps.keys())
+	# assert len(hps) == 0, "Unused hyperparameters: %s" % list(hps.keys())
 
 	counter = 0
 	while True:
@@ -109,19 +110,19 @@ def common_arg_parser():
 	parser = arg_parser()
 	parser.add_argument('--env', help='environment ID', type=str, default='Reacher-v2')
 	parser.add_argument('--env_type',
-						help='type of environment, used when the environment type cannot be automatically determined',
-						type=str)
+	                    help='type of environment, used when the environment type cannot be automatically determined',
+	                    type=str)
 	parser.add_argument('--seed', help='RNG seed', type=int, default=0)
 	parser.add_argument('--alg', help='Algorithm', type=str, default='ppo2')
 	parser.add_argument('--num_timesteps', type=float, default=1e6),
 	parser.add_argument('--network', help='network type (mlp, cnn, lstm, cnn_lstm, conv_only)', default=None)
 	parser.add_argument('--gamestate', help='game state to load (so far only used in retro games)', default=None)
 	parser.add_argument('--num_env',
-						help='Number of environment copies being run in parallel. When not specified, set to number of cpus for Atari, and to 1 for Mujoco',
-						default=1, type=int)
+	                    help='Number of environment copies being run in parallel. When not specified, set to number of cpus for Atari, and to 1 for Mujoco',
+	                    default=1, type=int)
 	parser.add_argument('--reward_scale', help='Reward scale factor. Default: 1.0', default=1.0, type=float)
 	parser.add_argument('--save_path', help='Path to save trained model to',
-						default='../../results/PPO/try_1/Random_start/', type=str)
+	                    default='../../results/PPO/try_1/Random_start/', type=str)
 	parser.add_argument('--save_video_interval', help='Save video every x steps (0 = disabled)', default=0, type=int)
 	parser.add_argument('--save_video_length', help='Length of recorded video. Default: 200', default=200, type=int)
 	parser.add_argument('--play', default=False, action='store_true')
@@ -212,7 +213,7 @@ def main():
 	args = parser.parse_args()
 	print(logger.get_dir())
 	logger.configure(dir=logger.get_dir(),
-					 format_strs=['stdout', 'log', 'csv'] if MPI.COMM_WORLD.Get_rank() == 0 else [])
+	                 format_strs=['stdout', 'log', 'csv'] if MPI.COMM_WORLD.Get_rank() == 0 else [])
 	if MPI.COMM_WORLD.Get_rank() == 0:
 		with open(os.path.join(logger.get_dir(), 'experiment_tag.txt'), 'w') as f:
 			f.write(args.tag)
@@ -246,7 +247,7 @@ def main():
 
 	tf_util.make_session(make_default=True)
 	train(env_id=args.env, num_env=args.num_env, seed=seed,
-		  num_timesteps=args.num_timesteps, hps=hps, args=args)
+	      num_timesteps=args.num_timesteps, hps=hps, args=args)
 
 
 if __name__ == '__main__':
