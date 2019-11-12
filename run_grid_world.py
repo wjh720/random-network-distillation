@@ -15,6 +15,7 @@ from utils import set_global_seeds
 from vec_env import VecFrameStack
 from cmd_util import make_multi_pass_env, make_m_island_env, make_m_pushball_env, make_m_x_island_env, \
 	make_m_three_pass_env
+import shutil
 
 
 def get_venv(args, env_id, num_env, seed, hps):
@@ -188,6 +189,12 @@ def common_arg_parser():
 	return parser
 
 
+def mkdir(path):
+	if os.path.exists(path):
+		shutil.rmtree(path)
+	os.makedirs(path)
+
+
 def main():
 	parser = common_arg_parser()
 	'''
@@ -211,6 +218,9 @@ def main():
 	'''
 
 	args = parser.parse_args()
+
+	mkdir(args.save_path)
+
 	print(logger.get_dir())
 	logger.configure(dir=logger.get_dir(),
 	                 format_strs=['stdout', 'log', 'csv'] if MPI.COMM_WORLD.Get_rank() == 0 else [])
