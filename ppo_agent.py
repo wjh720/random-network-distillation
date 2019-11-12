@@ -210,8 +210,7 @@ class PpoAgent(object):
             all_ob.append(self.I.venvs[lump].reset())
         for step in range(num_timesteps):
             for lump in range(self.I.nlump):
-                acs = np.random.randint(low=0, high=self.ac_space.nvec[0],
-                                        size=(self.I.lump_stride,len(self.ac_space.nvec.shape)))
+                acs = np.random.randint(low=0, high=self.ac_space.n, size=(self.I.lump_stride,))
                 self.I.venvs[lump].step_async(acs)
                 ob, _, _, _ = self.I.venvs[lump].step_wait()
                 all_ob.append(ob)
