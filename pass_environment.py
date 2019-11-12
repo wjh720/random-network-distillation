@@ -125,7 +125,7 @@ class Pass:
 		self.t_step = 0
 
 		# Visualization
-		self.is_print = random.randint(0, 16) == 0
+		self.is_print = random.randint(0, 32) == 0
 		if self.is_print:
 			self.e_step = 0
 			self.hot_map_save_path = self.args.save_path
